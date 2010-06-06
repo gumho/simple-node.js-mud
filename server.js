@@ -3,7 +3,11 @@ var PORT = 8080;
 
 var GRID_SIZE = 10;
 
+//holds each user's position in dictionary for fast retrieval
+// key is user's id, values are coordinates in form {row : '0', col: '2'}
 var positions = new Array();
+
+//the grid
 var grid = new Array(GRID_SIZE);
 for (i=0; i < grid.length; i++) {
 	grid[i]=new Array(GRID_SIZE);
@@ -30,6 +34,14 @@ var mud = new function() {
 	}, 30 * 1000);
 }
 
+function destroyID(id) {
+	var p = getPos(id);
+	
+	//delete id from grid and positions dictionary
+	grid[p.row][p.col] = null;
+	delete positions[id];
+}
+
 function genCoordPoint() {
 	return Math.floor(Math.random() * GRID_SIZE);
 }
@@ -45,7 +57,7 @@ function getPos(id) {
 
 function movePos(id, direction) {
 	var p = getPos(id);
-	sys.puts('<' + id + '>: ' + p.row + ' ' + p.col);
+	sys.puts('<' + id + '>: moving ' + direction + ' from (' + p.row + ', ' + p.col + ')');
 
 	//wipe out old position
 	grid[p.row][p.col] = null;
@@ -115,4 +127,12 @@ fu.get("/recv", function(request, response) {
 		});
 	});
 
+});
+
+fu.get("/part", function(request, response) {
+	var id = qs.parse(url.parse(request.url).query).id;
+	
+	destroyID(id);
+	mud.flush();
+	sys.puts('<' + id + '>: has parted');
 });
