@@ -2,15 +2,21 @@
 <head>
 	<style type="text/css" media="screen">
 
+	#wrapper {
+		width: 700px;
+		margin: 0 auto;
+	}
+	
 	#grid {
-		width: 540px;
-		height: 540px;
+		width: 690px;
+		height: 690px;
 	}
 		.occupied, .vacant, .self {
 			float: left;
-			width: 50px;
-			height: 50px;
+			height: 65px;
+			width: 65px;
 			margin: 2px;
+			text-align: center;
 		}
 		
 		.self {
@@ -32,7 +38,7 @@
 	<script type="text/javascript" charset="utf-8">
 	var ID = 'guest' + Math.floor(Math.random()*101);
 	var GRID = new Array();
-
+		
 	function initGrid(grid) {
 		if(grid == null) {
 			return;
@@ -86,26 +92,27 @@
 			GRID = data.grid;
 			initGrid(GRID);
 		}
-		
-		$.ajax({ cache: false
-	         , type: "GET"
-	         , url: "/recv"
-	         , dataType: "json"
-	         , data: { }
-	         , error: function () {
-	             alert('long poll error...trying again');
-	             //don't flood the servers on error, wait 10 seconds before retrying
-	             setTimeout(longPoll, 10*1000);
-	           }
-	         , success: function (data) {
-	             transmission_errors = 0;
-	             //if everything went well, begin another request immediately
-	             //the server will take a long time to respond
-	             //how long? well, it will wait until there is another message
-	             //and then it will return it to us and close the connection.
-	             //since the connection is closed when we get data, we longPoll again
-	             longPoll(data);
-	           }
+
+		$.ajax({ 
+			cache: false,
+			type: "GET",
+			url: "/recv",
+			dataType: "json",
+			data: { },
+			error: function () {
+				alert('long poll error...trying again');
+				//don't flood the servers on error, wait 10 seconds before retrying
+				setTimeout(longPoll, 30*1000);
+			},
+			success: function (data) {
+				//if everything went well, begin another request immediately
+				//the server will take a long time to respond
+				//how long? well, it will wait until there is another message
+				//and then it will return it to us and close the connection.
+				//since the connection is closed when we get data, we longPoll again
+
+				longPoll(data);
+			}
 		});
 	}
 
@@ -146,12 +153,13 @@
 	</script>
 </head>
 <body>
-	<div id="join-control">
-		<a href="#" id="start">start</a>
-	</div>
+	<div id="wrapper">
+		<div id="join-control">
+			<a href="#" id="start">start</a>
+		</div>
 
-	<div id="grid">
-
+		<div id="grid">
+		</div>
 	</div>
 </body>
 </html>
