@@ -1,0 +1,157 @@
+<html>
+<head>
+	<style type="text/css" media="screen">
+
+	#grid {
+		width: 540px;
+		height: 540px;
+	}
+		.occupied, .vacant, .self {
+			float: left;
+			width: 50px;
+			height: 50px;
+			margin: 2px;
+		}
+		
+		.self {
+			background: red;
+		}
+		
+		.occupied {
+			background: yellow;
+		}
+
+		.vacant {
+			background: cyan;
+		}
+
+	</style>
+
+	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+
+	<script type="text/javascript" charset="utf-8">
+	var ID = 'guest' + Math.floor(Math.random()*101);
+	var GRID = new Array();
+
+	function initGrid(grid) {
+		if(grid == null) {
+			return;
+		}
+		$('#grid').html('');
+		for(row=0; row<grid.length; row++) {
+			for(col=0; col<grid.length;col++) {
+				
+				if(grid[row][col] == null) {
+					$('#grid').append('<div class="vacant"></div>');
+				} else if(grid[row][col] == ID){
+					$('#grid').append('<div class="self">' + grid[row][col] + '</div>');
+				} else {
+					$('#grid').append('<div class="occupied">' + grid[row][col] + '</div>');
+				}
+			}
+		}
+	}
+
+	function register() {
+		jQuery.get(
+			"/register", 
+			{ id : ID },
+			function (data) {
+				GRID = data.grid;
+				initGrid(GRID);
+			}, 
+			"json"
+		);					
+	}
+
+	function move(direction) {
+		if(direction) {
+			jQuery.get(
+				"/move", 
+				{
+					id : ID,
+					direction : direction
+				},
+				function (data) {
+					GRID = data.grid;
+					initGrid(GRID);
+				}, 
+				"json"
+			);	
+		}				
+	}
+	
+	function longPoll(data) {
+		if(data != undefined) {
+			GRID = data.grid;
+			initGrid(GRID);
+		}
+		
+		$.ajax({ cache: false
+	         , type: "GET"
+	         , url: "/recv"
+	         , dataType: "json"
+	         , data: { }
+	         , error: function () {
+	             alert('long poll error...trying again');
+	             //don't flood the servers on error, wait 10 seconds before retrying
+	             setTimeout(longPoll, 10*1000);
+	           }
+	         , success: function (data) {
+	             transmission_errors = 0;
+	             //if everything went well, begin another request immediately
+	             //the server will take a long time to respond
+	             //how long? well, it will wait until there is another message
+	             //and then it will return it to us and close the connection.
+	             //since the connection is closed when we get data, we longPoll again
+	             longPoll(data);
+	           }
+		});
+	}
+
+	//handlers in here
+	$(document).ready(function() {
+		$('#start').click(function() {
+			register();
+			
+			//bind keystrokes
+			$(document).keydown(function(event) {
+				if (event.keyCode == '37') {
+					direction = 'left';
+				}
+				if (event.keyCode == '38') {
+					direction = 'up';
+				}
+				if (event.keyCode == '39') {
+					direction = 'right';
+				}
+				if (event.keyCode == '40') {
+					direction = 'down';
+				}
+
+				move(direction);
+			});
+			
+			$('#join-control').hide();
+			
+			longPoll();
+		});
+		
+	});
+	
+	$(window).unload(function () {
+	  //jQuery.get("/part", {id: CONFIG.id}, function (data) { }, "json");
+	});
+	
+	</script>
+</head>
+<body>
+	<div id="join-control">
+		<a href="#" id="start">start</a>
+	</div>
+
+	<div id="grid">
+
+	</div>
+</body>
+</html>
