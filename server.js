@@ -17,7 +17,6 @@ var mud = new function() {
 	var callbacks = [];
 	
 	this.flush = function() {
-		sys.puts('flushing');
 		while(callbacks.length > 0) {
 			callbacks.shift().call();
 		}
@@ -57,7 +56,7 @@ function getPos(id) {
 
 function movePos(id, direction) {
 	var p = getPos(id);
-	sys.puts('<' + id + '>: moving ' + direction + ' from (' + p.row + ', ' + p.col + ')');
+	//sys.puts('<' + id + '>: moving ' + direction + ' from (' + p.row + ', ' + p.col + ')');
 
 	//wipe out old position
 	grid[p.row][p.col] = null;
@@ -96,14 +95,16 @@ fu.get("/", fu.staticHandler("index.html"));
 fu.get("/register", function(request, response) {
   	var id = qs.parse(url.parse(request.url).query).id;
 	
-	
 	setPos(id, genCoordPoint() , genCoordPoint());
 	
 	response.simpleJSON(200, { 
 		grid : grid
 	});
+	
+	sys.puts('<' + id + '>: has joined');
+	
 
-	mud.flush();
+	mud.flush();	
 });
 
 fu.get("/move", function(request, response) {
@@ -126,13 +127,14 @@ fu.get("/recv", function(request, response) {
 			grid : grid
 		});
 	});
-
 });
 
 fu.get("/part", function(request, response) {
 	var id = qs.parse(url.parse(request.url).query).id;
 	
 	destroyID(id);
-	mud.flush();
+	
 	sys.puts('<' + id + '>: has parted');
+	
+	mud.flush();
 });
