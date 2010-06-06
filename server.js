@@ -23,11 +23,11 @@ var mud = new function() {
 		callbacks.push(callback);
 	}
 		
-	setInterval(function() {		
-		while(callbacks.length > 0) {
-			callbacks.shift().call();
-		}
-	}, 3 * 1000);
+	// setInterval(function() {		
+	// 	while(callbacks.length > 0) {
+	// 		callbacks.shift().call();
+	// 	}
+	// }, 30 * 1000);
 }
 
 function setPos(id, row, col) {
