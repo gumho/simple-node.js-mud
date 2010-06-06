@@ -7,6 +7,11 @@
 		margin: 0 auto;
 	}
 	
+	#start {
+		font-size: 30px;
+		font-family: Georgia;
+	}
+	
 	#grid {
 		width: 690px;
 		height: 690px;
@@ -99,7 +104,7 @@
 			url: "/recv",
 			dataType: "json",
 			data: { },
-			error: function () {
+			error: function() {
 				alert('long poll error...trying again');
 				//don't flood the servers on error, wait 10 seconds before retrying
 				setTimeout(longPoll, 30*1000);
