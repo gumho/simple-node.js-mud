@@ -30,6 +30,10 @@ var mud = new function() {
 	}, 30 * 1000);
 }
 
+function genCoordPoint() {
+	return Math.floor(Math.random() * GRID_SIZE);
+}
+
 function setPos(id, row, col) {
 	grid[row][col] = id;
 	positions[id] = {row : row, col : col};
@@ -80,11 +84,14 @@ fu.get("/", fu.staticHandler("index.html"));
 fu.get("/register", function(request, response) {
   	var id = qs.parse(url.parse(request.url).query).id;
 	
-	setPos(id, 0, 0);
+	
+	setPos(id, genCoordPoint() , genCoordPoint());
 	
 	response.simpleJSON(200, { 
 		grid : grid
 	});
+
+	mud.flush();
 });
 
 fu.get("/move", function(request, response) {
