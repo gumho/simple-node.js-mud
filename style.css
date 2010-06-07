@@ -1,0 +1,41 @@
+#wrapper {
+	width: 650px;
+	margin: 0 auto;
+}
+
+#start {
+	font-size: 30px;
+	font-family: Georgia;
+}
+
+/*assuming 10 x 10 grid*/
+#grid {
+	width: 640px;
+	height: 640px;
+}
+	.occupied, .vacant, .self {
+		float: left;
+		height: 60px;
+		line-height: 60px;
+		width: 60px;
+		margin: 2px;
+		text-align: center;
+		font-family: Arial;
+	}
+	
+	.self {
+		background: red;
+		color: #fff;
+	}
+	
+	.occupied {
+		background: yellow;
+	}
+
+	.vacant {
+		background: cyan;
+	}
+	
+	.cherry {
+		background: url(cherry.png) cyan -2px -5px;
+	}
