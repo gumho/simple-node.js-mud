@@ -91,6 +91,8 @@ var fu = require("./fu"),
 fu.listen(PORT, HOST);
 
 fu.get("/", fu.staticHandler("index.html"));
+fu.get("/style.css", fu.staticHandler("style.css"));
+fu.get("/cherry.png", fu.staticHandler("cherry.png"));
 
 fu.get("/register", function(request, response) {
   	var id = qs.parse(url.parse(request.url).query).id;
